@@ -25,6 +25,14 @@ public class @Controles : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""1503cb3f-13f6-447e-8103-b0cb2ed06050"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -137,6 +145,17 @@ public class @Controles : IInputActionCollection, IDisposable
                     ""action"": ""move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8f6aef45-657f-4223-9aa0-be77615ca4a0"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""keyboard"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -158,6 +177,7 @@ public class @Controles : IInputActionCollection, IDisposable
         // gameplay
         m_gameplay = asset.FindActionMap("gameplay", throwIfNotFound: true);
         m_gameplay_move = m_gameplay.FindAction("move", throwIfNotFound: true);
+        m_gameplay_Jump = m_gameplay.FindAction("Jump", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -208,11 +228,13 @@ public class @Controles : IInputActionCollection, IDisposable
     private readonly InputActionMap m_gameplay;
     private IGameplayActions m_GameplayActionsCallbackInterface;
     private readonly InputAction m_gameplay_move;
+    private readonly InputAction m_gameplay_Jump;
     public struct GameplayActions
     {
         private @Controles m_Wrapper;
         public GameplayActions(@Controles wrapper) { m_Wrapper = wrapper; }
         public InputAction @move => m_Wrapper.m_gameplay_move;
+        public InputAction @Jump => m_Wrapper.m_gameplay_Jump;
         public InputActionMap Get() { return m_Wrapper.m_gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -225,6 +247,9 @@ public class @Controles : IInputActionCollection, IDisposable
                 @move.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMove;
                 @move.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMove;
                 @move.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnMove;
+                @Jump.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnJump;
+                @Jump.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnJump;
+                @Jump.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnJump;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -232,6 +257,9 @@ public class @Controles : IInputActionCollection, IDisposable
                 @move.started += instance.OnMove;
                 @move.performed += instance.OnMove;
                 @move.canceled += instance.OnMove;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
             }
         }
     }
@@ -248,5 +276,6 @@ public class @Controles : IInputActionCollection, IDisposable
     public interface IGameplayActions
     {
         void OnMove(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
     }
 }
